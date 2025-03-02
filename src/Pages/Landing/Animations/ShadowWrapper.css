@@ -1,0 +1,39 @@
+
+@keyframes shake-shadow {
+    0% { box-shadow: 0px 5px 1px cyan;
+    }
+    25% { box-shadow: 0px 0px 30px cyan; }
+    50% { box-shadow: 0px 0px 20px cyan; }
+    75% { box-shadow: 0px 0px 30px cyan; }
+    100% { box-shadow: 0px 5px 1px cyan;
+    }
+}
+@keyframes flipX {  /*GREAT TO ANIMATE EXITS*/
+    0% { transform: rotateY(0deg); }
+    /* 50% { transform: rotateY(180deg); } */
+    100% { transform: rotateY(40deg); }
+
+}
+@keyframes rotateForm {
+    0% { transform: perspective(1000px) rotateY(0deg); }
+    100% { transform: perspective(1000px) rotateY(-15deg); }
+  }
+.animate-rotate-form {
+  animation: rotateForm 1s ease-out forwards;
+}
+
+
+
+#image-container{
+    border-top-left-radius: 100px;
+    border-top-right-radius: 100px;
+    border-radius: 500px 500px 999px 999px;
+}
+
+/* #separator-line{
+    background: black;
+} */
+
+#form-target{
+    rotate: 0deg 0deg -40deg;
+}
