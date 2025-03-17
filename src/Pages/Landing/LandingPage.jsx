@@ -1,5 +1,4 @@
 import "./Animations/ShadowWrapper.css"
-import React from "react"
 import anubis from "../../assets/anubis.webp"
 import logo from "../../assets/LogoRound.webp"
 
@@ -56,12 +55,4 @@ export default function LandingPage() {
 
     </div>
   )
-}
-
-function LoginForm(){
-    return (
-        <div>
-
-        </div>
-    )
 }
