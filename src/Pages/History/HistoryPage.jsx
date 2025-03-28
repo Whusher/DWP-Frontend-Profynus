@@ -15,7 +15,7 @@ function History() {
             <div>
                 <p className="text-left px-10">We celebrate your first GB</p>
             </div>
-            <div className="flex w-full justify-between px-10">
+            <div className="flex w-full justify-around px-10">
                 <div className="m-15 h-60 text-center border border-cyan-300 w-60 rounded-4xl">
                     <p>Section for new users</p>
                 </div>

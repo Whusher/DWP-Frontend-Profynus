@@ -1,46 +1,57 @@
 import Dashboard from "../../Layouts/Dashboard"
-import SoundBeat from "../../assets/SoundBeat.webp"
+import SoundBeat from "/neonsoundwave.jpg"
+
 export default function HomePage() {
-    return (
-        <Dashboard child={<Home />} />
-    )
+  return <Dashboard child={<Home />} />
 }
 
 function Home() {
-    return (
-        <div className="flex justify-center items-center h-screen w-full bg-black">
-            {/* Contenedor principal */}
-            <div className="flex items-center h-full">
-                {/* Sección Izquierda (Imagen/GIF y Botón) */}
-                <div className="ml-10 text-center">
-                    <img src={SoundBeat} alt="business-image" className="h-[400px] w-[600px] object-cover rounded-lg" />
-                    <button className="border-2 cursor-pointer border-cyan-400 text-white bg-black p-3 my-6 rounded-md">
-                        Check Music
-                    </button>
-                </div>
-                <div className="flex flex-col justify-evenly h-full">
-                    {/* Sección Centro (Label Azul) */}
-                    <div className="bg-gradient-to-b from-gray-600 to-black from-10% text-white px-6 py-2 h-16 flex justify-center w-full text-center">
-                        <p className="tracking-wider mt-2 text-white">
-                            PROFYNUS
-                        </p>
-                    </div>
-
-                    {/* Sección Derecha (Descripción de Texto) */}
-                    <div className="max-w-xl">
-                        <p className="text-lg text-gray-200 text-center mx-auto ml-10">
-                            <strong>Profynus</strong> es una plataforma innovadora que permite la descarga de pistas de audio
-                            de YouTube de manera segura y eficiente. Diseñada con una arquitectura
-                            <span className="text-cyan-400"> Frontend-Backend</span>, garantiza un alto rendimiento y protección de datos.
-                            A diferencia de servicios fraudulentos, Profynus ofrece un entorno libre de malware,
-                            con autenticación segura y sin riesgos para el usuario.
-                            Explora una experiencia optimizada con una interfaz moderna en
-                            <span className="text-cyan-500"> negro y cyan</span>.
-                        </p>
-                    </div>
-
-                </div>
+  return (
+    <div className="min-h-screen w-full bg-black text-white">
+      <div className="container mx-auto px-4 py-8 md:py-12 lg:py-16">
+        {/* Main content container - stacks vertically on mobile, horizontal on larger screens */}
+        <div className="flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-12">
+          {/* Left section (Image and Button) - full width on mobile, proportional on desktop */}
+          <div className="flex flex-col items-center lg:w-1/2">
+            <div className="relative w-full max-w-xl mx-auto">
+              <img
+                src={SoundBeat || "/placeholder.svg"}
+                alt="Profynus Music"
+                className="w-full h-auto rounded-lg shadow-lg object-cover aspect-video"
+              />
+              <div className="absolute -bottom-3 left-0 right-0 flex justify-center">
+                <button className="border-2 border-cyan-400 text-white bg-black px-6 py-3 rounded-md hover:bg-cyan-400 hover:text-black transition-colors duration-300 font-medium shadow-lg">
+                  Check Music
+                </button>
+              </div>
             </div>
+          </div>
+
+          {/* Right section (Brand and Description) - full width on mobile, proportional on desktop */}
+          <div className="flex flex-col gap-6 lg:w-1/2 mt-12 lg:mt-0">
+            {/* Brand label */}
+            <div className="bg-gradient-to-b from-blue-600/40 to-black from-10% px-6 py-4 rounded-t-lg border-t-2 border-x-2 border-cyan-400">
+              <p className="tracking-widest text-2xl md:text-3xl font-bold text-center text-white">PROFYNUS</p>
+            </div>
+
+            {/* Description text */}
+            <div className="bg-black bg-opacity-70 p-6 rounded-lg border border-gray-800">
+              <p className="text-base md:text-lg text-gray-200 leading-relaxed">
+                <strong className="text-cyan-400 text-xl">Profynus</strong> is an innovative platform that provides
+                direct access to high-quality music streaming in a secure and efficient environment. Built with a robust{" "}
+                <span className="text-cyan-400">Frontend-Backend</span> architecture, it ensures high performance and
+                data protection.
+                <br />
+                <br />
+                Unlike unreliable services, Profynus offers a malware-free environment with secure authentication and
+                zero risk to users. Experience our optimized music service with a modern interface featuring sleek{" "}
+                <span className="text-cyan-500">black and cyan</span> aesthetics.
+              </p>
+            </div>
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  )
 }
+

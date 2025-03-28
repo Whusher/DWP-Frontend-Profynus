@@ -37,3 +37,12 @@
 #form-target{
     rotate: 0deg 0deg -40deg;
 }
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
