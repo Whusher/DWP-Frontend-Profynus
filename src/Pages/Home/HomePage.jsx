@@ -20,7 +20,7 @@ function Home() {
                 className="w-full h-auto rounded-lg shadow-lg object-cover aspect-video"
               />
               <div className="absolute -bottom-3 left-0 right-0 flex justify-center">
-                <button className="border-2 border-cyan-400 text-white bg-black px-6 py-3 rounded-md hover:bg-cyan-400 hover:text-black transition-colors duration-300 font-medium shadow-lg">
+                <button className="border-2 cursor-pointer border-cyan-400 text-white bg-black px-6 py-3 rounded-md hover:bg-cyan-400 hover:text-black transition-colors duration-300 font-medium shadow-lg">
                   Check Music
                 </button>
               </div>
