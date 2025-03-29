@@ -1,13 +1,13 @@
 
 @keyframes shake-shadow {
-    0% { box-shadow: 0px 5px 1px cyan;
-    }
-    25% { box-shadow: 0px 0px 30px cyan; }
-    50% { box-shadow: 0px 0px 20px cyan; }
-    75% { box-shadow: 0px 0px 30px cyan; }
-    100% { box-shadow: 0px 5px 1px cyan;
-    }
+  0% { box-shadow: 0px 5px 5px cyan; }
+  20% { box-shadow: 0px 0px 15px cyan; }
+  40% { box-shadow: 0px 0px 25px cyan; }
+  60% { box-shadow: 0px 0px 30px cyan; }
+  80% { box-shadow: 0px 0px 20px cyan; }
+  100% { box-shadow: 0px 5px 5px cyan; }
 }
+
 @keyframes flipX {  /*GREAT TO ANIMATE EXITS*/
     0% { transform: rotateY(0deg); }
     /* 50% { transform: rotateY(180deg); } */
