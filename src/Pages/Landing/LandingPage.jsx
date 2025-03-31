@@ -3,11 +3,16 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Link } from "react-router"
 import { Download, Play, ListMusic, ChevronRight, Music, Headphones, Share2, Heart, Volume2, Menu, X, Github, Twitter, Instagram } from 'lucide-react'
-
+import { useNavigate } from "react-router"
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [currentFeature, setCurrentFeature] = useState(0)
-  
+  const navigate = useNavigate();
+  const handleNavigation = (parameter = '/') => {
+    navigate(parameter)
+  }
+
+
   // Auto-rotate features
   useEffect(() => {
     const interval = setInterval(() => {
@@ -30,11 +35,12 @@ export default function LandingPage() {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <NavLink href="#features">Features</NavLink>
-            <NavLink href="#how-it-works">How It Works</NavLink>
-            <NavLink href="#showcase">Music</NavLink>
-            <NavLink href="#download">Download</NavLink>
+            <NavLink href="/signup">Features</NavLink>
+            <NavLink href="/signup">How It Works</NavLink>
+            <NavLink href="/signup">Music</NavLink>
+            <NavLink href="/signup">Download</NavLink>
             <motion.button
+              onClick={()=>handleNavigation('/signup')}
               className="bg-cyan-500 text-black px-6 py-2 rounded-full font-medium"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -64,11 +70,12 @@ export default function LandingPage() {
               transition={{ duration: 0.3 }}
             >
               <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">
-                <MobileNavLink href="#features" onClick={() => setIsMenuOpen(false)}>Features</MobileNavLink>
-                <MobileNavLink href="#how-it-works" onClick={() => setIsMenuOpen(false)}>How It Works</MobileNavLink>
-                <MobileNavLink href="#showcase" onClick={() => setIsMenuOpen(false)}>Music</MobileNavLink>
-                <MobileNavLink href="#download" onClick={() => setIsMenuOpen(false)}>Download</MobileNavLink>
+                <MobileNavLink href="/signup" onClick={() => setIsMenuOpen(false)}>Features</MobileNavLink>
+                <MobileNavLink href="/signup" onClick={() => setIsMenuOpen(false)}>How It Works</MobileNavLink>
+                <MobileNavLink href="/signup" onClick={() => setIsMenuOpen(false)}>Music</MobileNavLink>
+                <MobileNavLink href="/signup" onClick={() => setIsMenuOpen(false)}>Download</MobileNavLink>
                 <motion.button
+                  onClick={()=> handleNavigation('/signup')}
                   className="bg-cyan-500 text-black px-6 py-3 rounded-full font-medium w-full"
                   whileTap={{ scale: 0.95 }}
                 >
@@ -346,7 +353,7 @@ export default function LandingPage() {
               transition={{ duration: 0.5, delay: 0.4 }}
               viewport={{ once: true }}
             >
-              <motion.button
+              {/* <motion.button
                 className="bg-cyan-500 text-black px-8 py-4 rounded-xl font-medium flex items-center gap-3 text-lg"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -372,12 +379,13 @@ export default function LandingPage() {
                   <div className="text-xs opacity-80">Download on</div>
                   <div>Google Play</div>
                 </div>
-              </motion.button>
+              </motion.button> */}
               
               <motion.button
                 className="bg-transparent border border-cyan-500 text-cyan-400 px-8 py-4 rounded-xl font-medium flex items-center gap-3 text-lg"
                 whileHover={{ scale: 1.05, backgroundColor: "rgba(8, 145, 178, 0.1)" }}
                 whileTap={{ scale: 0.95 }}
+                onClick={()=>handleNavigation('/signup')}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>

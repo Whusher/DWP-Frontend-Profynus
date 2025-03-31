@@ -1,0 +1,55 @@
+/* Add this to your global CSS file */
+
+/* Override react-toastify container styles */
+.Toastify__toast-container {
+    width: auto !important;
+    max-width: 420px;
+    min-width: 320px;
+  }
+  
+  /* Custom progress bar animation */
+  .Toastify__progress-bar--animated {
+    animation: Toastify__trackProgress linear 1;
+  }
+  
+  /* Custom toast entrance animation */
+  .Toastify__toast--default,
+  .Toastify__toast--success,
+  .Toastify__toast--error,
+  .Toastify__toast--info,
+  .Toastify__toast--warning {
+    animation: toast-slide-in 0.3s ease forwards !important;
+  }
+  
+  /* Custom toast exit animation */
+  .Toastify__toast--default-exit,
+  .Toastify__toast--success-exit,
+  .Toastify__toast--error-exit,
+  .Toastify__toast--info-exit,
+  .Toastify__toast--warning-exit {
+    animation: toast-slide-out 0.3s ease forwards !important;
+  }
+  
+  @keyframes toast-slide-in {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes toast-slide-out {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+  
+  

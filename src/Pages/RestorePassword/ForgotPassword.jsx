@@ -1,11 +1,10 @@
-
-import  React from "react"
-
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Mail, AlertCircle, Loader2, ArrowLeft, CheckCircle, XCircle } from "lucide-react"
 import { Link } from "react-router"
 import logo from "../../assets/LogoRound.webp"
+import { requestRestorePassword } from "../../Services/security/RestoreAPI"
+import { toast } from "react-toastify"
 
 export default function ForgotPassword() {
   // Form state
@@ -53,17 +52,27 @@ export default function ForgotPassword() {
 
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      // await new Promise((resolve) => setTimeout(resolve, 1500))
 
-      // For demo purposes, let's simulate success most of the time
-      // but occasionally show an error to demonstrate that flow
-      if (Math.random() > 0.2) {
+      // // For demo purposes, let's simulate success most of the time
+      // // but occasionally show an error to demonstrate that flow
+      // if (Math.random() > 0.2) {
+      //   setRequestStatus("success")
+      // } else {
+      //   setRequestStatus("error")
+      //   setErrorMessage("Unable to process your request. Please try again later.")
+      // }
+      const res = await requestRestorePassword(email);
+      console.log(res)
+      if(res.success){
         setRequestStatus("success")
-      } else {
+        // toast.success('Check your email to follow instructions recovery.')
+      }else{
         setRequestStatus("error")
-        setErrorMessage("Unable to process your request. Please try again later.")
+        setErrorMessage(res.message || 'Service not available.')
       }
     } catch (error) {
+      console.log(error)
       setRequestStatus("error")
       setErrorMessage("An unexpected error occurred. Please try again.")
     } finally {

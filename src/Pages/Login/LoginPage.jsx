@@ -1,14 +1,16 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Eye, EyeOff, Lock, Mail, AlertCircle, Loader2 } from "lucide-react"
+import { useNavigate } from "react-router"
 import { Link } from "react-router"
 import anubis from "../../assets/anubis.webp"
 import logo from "../../assets/LogoRound.webp"
 import "./Animations/ShadowWrapper.css"
+import { login } from "../../Services/auth/AuthAPI"
+import { toast } from "react-toastify"
 
 export default function LoginPage() {
+  const navigation = useNavigate();
   // Form state
   const [formData, setFormData] = useState({
     email: "",
@@ -84,18 +86,28 @@ export default function LoginPage() {
 
       try {
         // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1500))
+        // await new Promise((resolve) => setTimeout(resolve, 1500))
 
-        // For demo purposes, let's simulate a successful login for a specific email
-        if (formData.email === "demo@profynus.com" && formData.password === "password") {
+        const data = await login(formData);
+
+        if (data.login) {
           // Successful login - would normally redirect or set auth state
-          console.log("Login successful", formData)
-          window.location.href = "/home"
+          // console.log("Login successful", formData)
+          // window.location.href = "/home" //Check to pass MFA site
+          setLoginError("")
+          if(data.mfaEnabled){
+            toast.success('Welcome again, please authenticate your MFA.')
+            navigation('/mfa-auth')
+          }else{ // Set up MFA mandatory
+            navigation('/validate-account')
+          }
         } else {
           // Failed login
-          setLoginError("Invalid email or password")
+          // setLoginError("Invalid email or password")
+          setLoginError( data.message ?? "Invalid email or password")
         }
       } catch (error) {
+        console.log(error);
         setLoginError("An error occurred. Please try again.")
       } finally {
         setIsLoading(false)
@@ -320,16 +332,6 @@ export default function LoginPage() {
               </motion.button>
             </motion.div>
           </form>
-
-          {/* Demo credentials hint */}
-          <motion.div
-            className="w-[85%] sm:w-3/4 mt-2 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2 }}
-          >
-            <p className="text-xs text-gray-400">Demo: demo@profynus.com / password</p>
-          </motion.div>
         </motion.div>
       </div>
 

@@ -2,6 +2,10 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Check, Copy, RefreshCw, Loader2, Shield, AlertCircle, ChevronRight, CheckCircle2 } from "lucide-react"
 import logo from "../../../assets/LogoRound.webp"
+import { QRCodeSVG } from "qrcode.react"
+import { getMFASetup, verifyMFA } from "../../../Services/auth/AuthAPI"
+import { toast } from "react-toastify"
+import { useAuth } from "../../../Context/AuthContext"
 
 export default function MFASetupPage() {
   // State for the MFA setup process
@@ -10,12 +14,29 @@ export default function MFASetupPage() {
   const [isScanned, setIsScanned] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
-  const [secretKey, setSecretKey] = useState("ABCD EFGH IJKL MNOP")
+  const [secretKey, setSecretKey] = useState("") //this is API RESPONSE
+  const [shortTextKey,setShortTextKey] = useState('');
   const [countdown, setCountdown] = useState(30)
   const [isCopied, setIsCopied] = useState(false)
-
+  const {login} = useAuth();
   // Simulate countdown for TOTP code expiration
-  useEffect(() => {
+  useEffect(() => { //HERE WE NEED TO RETRIEVE THE KEY FROM OUR API
+    const fetchMFA = async() => {
+      try{
+        const response = await getMFASetup();
+        if (response.valid){
+          setSecretKey(response.secret)
+          const [,shortT] = response.secret.split('=');
+          setShortTextKey(shortT);
+        }else{
+          toast.error('Service not available, try later...')
+        }
+      }catch(e){
+        console.log(e)
+        toast.error('Service not available');
+      }
+    }
+    fetchMFA();
     if (step === 2) {
       const timer = setInterval(() => {
         setCountdown((prev) => {
@@ -41,32 +62,48 @@ export default function MFASetupPage() {
 
   // Copy secret key to clipboard
   const copySecretKey = () => {
-    navigator.clipboard.writeText(secretKey.replace(/\s/g, ""))
+    // navigator.clipboard.writeText(secretKey.replace(/\s/g, ""))
+    navigator.clipboard.writeText(shortTextKey.replace(/\s/g, ""))
     setIsCopied(true)
     setTimeout(() => setIsCopied(false), 2000)
   }
 
   // Handle verification submission
-  const handleVerify = () => {
+  const handleVerify = async() => {
     setIsLoading(true)
     setError("")
 
     // Simulate API call to verify code
-    setTimeout(() => {
-      // For demo purposes, let's say "123456" is the correct code
-      if (verificationCode === "123456") {
-        setStep(3) // Success
-      } else {
-        setError("Invalid verification code. Please try again.")
+    // setTimeout(() => {
+    //   // For demo purposes, let's say "123456" is the correct code
+    //   if (verificationCode === "123456") {
+    //     setStep(3) // Success
+    //   } else {
+    //     setError("Invalid verification code. Please try again.")
+    //   }
+    //   setIsLoading(false)
+    // }, 1500)
+    
+    try{
+      const response = await verifyMFA(verificationCode);
+      if(response.success){
+        await login(response);
+        setStep(3);
+      }else{
+        setError('Invalid verification code. Please try again.')
       }
+    }catch(e){
+      console.log(e);
+      setError('Service not available, please try again later.')
+    }finally{
       setIsLoading(false)
-    }, 1500)
+    }
   }
 
   // Handle completion
   const handleComplete = () => {
     // Redirect to login page or dashboard
-    window.location.href = "/login"
+    window.location.href = "/home"
   }
 
   return (
@@ -158,18 +195,7 @@ export default function MFASetupPage() {
                 <div className="flex justify-center mb-6">
                   <div className="bg-white p-4 rounded-lg">
                     {/* This is a placeholder for the actual QR code */}
-                    <svg width="180" height="180" viewBox="0 0 180 180">
-                      <rect width="180" height="180" fill="white" />
-                      <path d="M20,20 h40 v40 h-40 z M30,30 h20 v20 h-20 z" fill="black" />
-                      <path d="M70,20 h40 v40 h-40 z M80,30 h20 v20 h-20 z" fill="black" />
-                      <path d="M120,20 h40 v40 h-40 z M130,30 h20 v20 h-20 z" fill="black" />
-                      <path d="M20,70 h40 v40 h-40 z M30,80 h20 v20 h-20 z" fill="black" />
-                      <path d="M70,70 h40 v40 h-40 z" fill="black" />
-                      <path d="M120,70 h40 v40 h-40 z M130,80 h20 v20 h-20 z" fill="black" />
-                      <path d="M20,120 h40 v40 h-40 z M30,130 h20 v20 h-20 z" fill="black" />
-                      <path d="M70,120 h40 v40 h-40 z" fill="black" />
-                      <path d="M120,120 h40 v40 h-40 z M130,130 h20 v20 h-20 z" fill="black" />
-                    </svg>
+                    <QRCodeSVG value={secretKey}/>
                   </div>
                 </div>
 
@@ -179,7 +205,7 @@ export default function MFASetupPage() {
                     If you can't scan the QR code, enter this secret key manually:
                   </p>
                   <div className="flex items-center bg-gray-900 rounded-md p-2">
-                    <code className="text-cyan-400 flex-grow font-mono text-center">{secretKey}</code>
+                    <code className="text-cyan-400 flex-grow font-mono text-center truncate">{shortTextKey}</code>
                     <motion.button
                       onClick={copySecretKey}
                       className="ml-2 text-gray-400 hover:text-cyan-400 p-1 rounded-md"
@@ -266,9 +292,9 @@ export default function MFASetupPage() {
                     </motion.p>
                   )}
 
-                  <p className="mt-4 text-xs text-gray-400">
+                  {/* <p className="mt-4 text-xs text-gray-400">
                     For demo purposes, enter "123456" as the verification code.
-                  </p>
+                  </p> */}
                 </div>
 
                 <div className="flex justify-between">
@@ -331,7 +357,7 @@ export default function MFASetupPage() {
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                 >
-                  Continue to Login
+                  Log in...
                 </motion.button>
               </motion.div>
             )}

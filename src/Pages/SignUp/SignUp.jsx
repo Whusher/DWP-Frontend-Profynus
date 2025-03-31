@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { motion, useAnimateMini } from "framer-motion"
 import { Eye, EyeOff, Check, AlertCircle, Lock, User, Mail, UserCircle } from "lucide-react"
 import anubis from "../../assets/anubis.webp"
 import logo from "../../assets/LogoRound.webp"
 import "../Login/Animations/ShadowWrapper.css"
 import { Link } from "react-router"
+import { signup } from "../../Services/auth/AuthAPI"
+import { toast } from "react-toastify"
+import { useNavigate } from "react-router"
 
 export default function SignUp() {
+  const navigation = useNavigate();
   // Form state
   const [formData, setFormData] = useState({
     firstName: "",
@@ -128,15 +132,21 @@ export default function SignUp() {
   }
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault()
     setFormSubmitted(true)
 
     const isValid = validateForm()
     if (isValid) {
-      setFormValid(true)
       // Here you would typically send the data to your backend
-      console.log("Form submitted successfully", formData)
+      const res = await signup(formData);
+      if(res.success){
+        //Go to setup MFA
+        setFormValid(true)//Indicates success for the next process
+      }else{
+        toast.error(res.message)
+        setFormValid(false)
+      }
     } else {
       setFormValid(false)
     }
@@ -474,7 +484,7 @@ export default function SignUp() {
                 <h3 className="text-xl font-bold text-white mb-2">Registration Successful!</h3>
                 <p className="text-gray-300 mb-6">Your account has been created. Welcome to Profynus!</p>
                 <button
-                  onClick={() => setFormValid(false)}
+                  onClick={() => navigation('/validate-account')}
                   className="bg-cyan-500 text-black px-6 py-2 rounded-md font-medium hover:bg-cyan-400 transition-colors"
                 >
                   Continue

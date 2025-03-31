@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Eye, EyeOff, Lock, AlertCircle, Loader2, ArrowLeft, CheckCircle } from "lucide-react"
-import { Link, useSearchParams, useNavigate } from "react-router"
+import { Link, useNavigate, useParams } from "react-router"
 import logo from "../../../assets/LogoRound.webp"
+import { resetPasswordAccount } from "../../../Services/security/RestoreAPI"
 
 export default function ResetPassword() {
-  const [searchParams] = useSearchParams()
+  // const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const token = searchParams.get("token")
+  // const token = searchParams.get("token")
+  const {token} = useParams();
 
   // Form state
   const [formData, setFormData] = useState({
@@ -123,13 +125,20 @@ export default function ResetPassword() {
       }
 
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const res = await resetPasswordAccount(token, formData.password);
+      if(res.success){
+        setIsSuccess(true)
+        // Start countdown for redirect
+        startRedirectCountdown()
 
-      // For demo purposes, always succeed
-      setIsSuccess(true)
+      }else{
+        setIsSuccess(false);
+        setErrors({
+          ...errors,
+          general: "An error occurred while resetting your password. Service not available.",
+        })
+      }
 
-      // Start countdown for redirect
-      startRedirectCountdown()
     } catch (error) {
       setErrors({
         ...errors,

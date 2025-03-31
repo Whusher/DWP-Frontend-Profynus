@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react"
 import { useMobile } from "./hooks/use-mobile"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
 import { Menu, X, LogOut, Settings } from "lucide-react"
+import { useAuth } from "../Context/AuthContext"
+import { closeSession } from "../Services/auth/AuthAPI"
 
 export default function Header() {
+  const navigate = useNavigate();
+  const {user, logout} = useAuth();
   const [currentTime, setCurrentTime] = useState(new Date())
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const isMobile = useMobile()
@@ -20,6 +24,20 @@ export default function Header() {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
+  }
+
+  const handleLogout = async() => {
+    try{
+      const res = await closeSession();
+      if(res){
+        console.log(res);
+        await logout();
+      }
+      navigate('/');
+    }catch(e){
+      console.log(e);
+
+    }
   }
 
   return (
@@ -46,8 +64,8 @@ export default function Header() {
 
         {/* Right section - User info and logout */}
         <div className="flex items-center space-x-4">
-          <p className="hidden sm:block">Hello User</p>
-          <button className="cursor-pointer flex items-center gap-2 transition-all duration-300 hover:text-red-500 shadow-md hover:shadow-red-500/70 p-2 rounded-md">
+          <p className="hidden sm:block">Hello! <span className="text-cyan-400">{user.username}</span></p>
+          <button onClick={handleLogout} className="cursor-pointer flex items-center gap-2 transition-all duration-300 hover:text-red-500 shadow-md hover:shadow-red-500/70 p-2 rounded-md">
             <span className="hidden sm:inline">Logout</span>
             <LogOut size={20} />
           </button>
