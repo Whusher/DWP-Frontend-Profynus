@@ -4,6 +4,7 @@ import Carousel from "react-multi-carousel"
 import "react-multi-carousel/lib/styles.css"
 import { Heart, Disc3, Play, Download, ChevronLeft, ChevronRight, Clock, Music } from "lucide-react"
 import { motion } from "framer-motion"
+import { registerDownload } from "../Services/music/MusicAPI"
 import { useState } from "react"
 
 // Define responsive breakpoints
@@ -83,11 +84,55 @@ const MusicCard = ({ song }) => {
     setIsFavorite(!isFavorite)
   }
 
-  const handleDownload = (e) => {
-    e.stopPropagation()
-    // Download logic here
-    window.open(song.downloadURL, "_blank")
-  }
+  // const handleDownload = async(e) => {
+  //   e.stopPropagation()
+  //   try {
+  //     const response = await fetch(song.downloadURL);
+  //     const blob = await response.blob();
+  //     const link = document.createElement("a");
+      
+  //     link.href = URL.createObjectURL(blob);
+  //     link.download = name;
+  //     document.body.appendChild(link);
+  //     link.click();
+      
+  //     // Eliminar el link después de la descarga
+  //     document.body.removeChild(link);
+  //     URL.revokeObjectURL(link.href);
+  //   } catch (error) {
+  //     console.error("Error al descargar el archivo:", error);
+  //   }
+  //   // // Download logic here
+  //   // window.open(song.downloadURL, "_blank")
+  // }
+  const handleDownload = async (e) => {
+    e.stopPropagation();
+  
+    try {
+      const response = await fetch(song.downloadURL);
+      const blob = await response.blob();
+      const sizeMB = (blob.size / (1024 * 1024)).toFixed(2); // Convertir a MB
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+
+      await registerDownload({
+          userId: "Will set a token",
+          songName: name,
+          artist: "Desconocido", // Asegúrate de obtener este dato si está disponible
+          album: "Desconocido", // Asegúrate de obtener este dato si está disponible
+          size: sizeMB,
+          downloadURL: song.downloadURL,
+        });
+    } catch (error) {
+      console.error("Error al descargar el archivo:", error);
+    }
+  };
+  
 
   return (
     <motion.div

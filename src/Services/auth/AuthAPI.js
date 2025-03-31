@@ -72,7 +72,6 @@ export const verifyMFA = async (tokenMFA) => {
       { withCredentials: true }
     );
     if (res.data.username) { // HANDLE LOGIN NOW FOR CONTEXT AND OTHER PRUPOSES
-      
       return { ...res.data, success: true };
     } else {
       return { ...res.data, success: false };

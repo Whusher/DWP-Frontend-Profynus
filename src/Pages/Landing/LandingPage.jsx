@@ -38,7 +38,7 @@ export default function LandingPage() {
             <NavLink href="/signup">Features</NavLink>
             <NavLink href="/signup">How It Works</NavLink>
             <NavLink href="/signup">Music</NavLink>
-            <NavLink href="/signup">Download</NavLink>
+            <NavLink href="/login">Login</NavLink>
             <motion.button
               onClick={()=>handleNavigation('/signup')}
               className="bg-cyan-500 text-black px-6 py-2 rounded-full font-medium"
@@ -127,6 +127,7 @@ export default function LandingPage() {
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
                 <motion.button
+                  onClick={()=> navigate('/signup')}
                   className="bg-cyan-500 text-black px-8 py-3 rounded-full font-medium flex items-center gap-2"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -134,6 +135,7 @@ export default function LandingPage() {
                   Get Started <ChevronRight size={18} />
                 </motion.button>
                 <motion.button
+                  onClick={()=> navigate('/signup')}
                   className="bg-transparent border border-cyan-500 text-cyan-400 px-8 py-3 rounded-full font-medium flex items-center gap-2"
                   whileHover={{ scale: 1.05, backgroundColor: "rgba(8, 145, 178, 0.1)" }}
                   whileTap={{ scale: 0.95 }}

@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// const BASE_API_URL_USER = "http://localhost:5000"; //LOCAL ENVIRONMENT
-const BASE_API_URL_USER = "https://profynus-backend.vercel.app"; //PRODUCTION ENVIRONMENT
+const BASE_API_URL_USER = "http://localhost:5000"; //LOCAL ENVIRONMENT
+// const BASE_API_URL_USER = "https://profynus-backend.vercel.app"; //PRODUCTION ENVIRONMENT
 // URLs de la API
 
 // Obtener token de localStorage

@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, useMemo } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
-import { useLocation } from "react-router"
+import { useLocation, useNavigate } from "react-router"
 import { OrbitControls } from "@react-three/drei"
 import { motion, AnimatePresence } from "framer-motion"
 import * as THREE from "three"
-import { Play, Pause, SkipBack, SkipForward, Volume2, Volume1, VolumeX, Download, Repeat, Music } from "lucide-react"
+import { Play, Pause, SkipBack, SkipForward, Volume2, Volume1, VolumeX, Download, Repeat, Music, ArrowBigLeftDashIcon, ArrowBigLeft } from "lucide-react"
+import { sendBehavioralMetrics } from "../../Services/music/MusicAPI"
 
 // Keep the original Three.js visualization components unchanged
 const CyanWaveAnimation = () => {
@@ -100,12 +101,36 @@ const PixelSwarm = () => {
 const EnhancedMediaPlayer = ({
   defaultSong = { title: "Unknown Track", artist: "Unknown Artist", downloadURL: "" },
 }) => {
+
+  // API SERVICE ISOLATION
+  // Función para enviar métricas en el cliente (front-end)
+    const sendMetrics = (metricsData) => {
+      const { action, currentTime, sessionTime, totalListeningTime, progress } = metricsData;
+      sendBehavioralMetrics({
+          songName: song.name, // Nombre de la canción desde Firebase
+          songUrl: song.downloadURL, // URL de descarga desde Firebase
+          action,
+          currentTime,
+          sessionTime,
+          totalListeningTime,
+          progress
+        })
+        .then(response => console.log('Success metrics handled', response))
+        .catch(error => console.error('Error enviando métricas:', error));
+    };
+
+
+  const navigate = useNavigate();
   const location = useLocation()
   const [audioData, setAudioData] = useState([])
   const audioContextRef = useRef(null)
   const audioElementRef = useRef(null)
   const analyserRef = useRef(null)
   const animationFrameRef = useRef(null)
+
+  // Referencias para el tracking de tiempo
+  const [startListeningTime, setStartListeningTime] = useState(null);
+  const [totalListeningTime, setTotalListeningTime] = useState(0);
 
   // Enhanced player state
   const [isPlaying, setIsPlaying] = useState(false)
@@ -157,6 +182,22 @@ const EnhancedMediaPlayer = ({
       newAudioElement.addEventListener("ended", () => {
         if (!isLooping) {
           setIsPlaying(false)
+          // Calcular tiempo de escucha y enviar métricas
+          if (startListeningTime) {
+            const sessionTime = (Date.now() - startListeningTime) / 1000;
+            const newTotalTime = totalListeningTime + sessionTime;
+            
+            sendMetrics({
+              songId: song.id,
+              action: 'completed',
+              sessionTime: sessionTime,
+              totalListeningTime: newTotalTime,
+              completionRate: 1.0 // 100% completado
+            });
+            
+            setStartListeningTime(null);
+            setTotalListeningTime(newTotalTime);
+          }
         }
       })
 
@@ -207,6 +248,10 @@ const EnhancedMediaPlayer = ({
         .play()
         .then(() => {
           setIsPlaying(true)
+
+          // Registrar cuando el usuario comienza a escuchar
+          setStartListeningTime(Date.now());
+
           setIsLoading(false)
         })
         .catch((error) => {
@@ -222,6 +267,24 @@ const EnhancedMediaPlayer = ({
   const pauseAudio = () => {
     if (audioElementRef.current) {
       audioElementRef.current.pause()
+         // Calcular el tiempo que estuvo escuchando en esta sesión
+        if (startListeningTime) {
+          const sessionTime = (Date.now() - startListeningTime) / 1000; // en segundos
+          const newTotalTime = totalListeningTime + sessionTime;
+          setTotalListeningTime(newTotalTime);
+          
+          // Enviar métrica de pausa
+          sendMetrics({
+            songId: song.id,
+            action: 'pause',
+            currentTime: audioElementRef.current.currentTime,
+            sessionTime: sessionTime,
+            totalListeningTime: newTotalTime
+          });
+          
+          // Reiniciar el tiempo de inicio
+          setStartListeningTime(null);
+        }
       setIsPlaying(false)
     }
   }
@@ -313,14 +376,30 @@ const EnhancedMediaPlayer = ({
   }
 
   // Download the current song
-  const downloadSong = () => {
+  const downloadSong = async() => {
     if (song.downloadURL) {
-      const link = document.createElement("a")
-      link.href = song.downloadURL
-      link.download = `${song.title || "track"}.mp3`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      try {
+        const response = await fetch(song.downloadURL);
+        const blob = await response.blob();
+        const link = document.createElement("a");
+        
+        link.href = URL.createObjectURL(blob);
+        link.download = song.name;
+        document.body.appendChild(link);
+        link.click();
+        
+        // Eliminar el link después de la descarga
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+      } catch (error) {
+        console.error("Error al descargar el archivo:", error);
+      }
+      // const link = document.createElement("a")
+      // link.href = song.downloadURL
+      // link.download = `${song.title || "track"}.mp3`
+      // document.body.appendChild(link)
+      // link.click()
+      // document.body.removeChild(link)
     }
   }
 
@@ -331,7 +410,25 @@ const EnhancedMediaPlayer = ({
 
   // Clean up on unmount
   useEffect(() => {
-    return () => { //Always use before unmount component
+    return () => {
+      // Enviar métrica final si estaba reproduciendo
+        if (isPlaying && startListeningTime && audioElementRef.current) {
+          const finalSessionTime = (Date.now() - startListeningTime) / 1000;
+          const finalTotalTime = totalListeningTime + finalSessionTime;
+          
+          sendMetrics({
+            songId: song.id,
+            action: 'unmount',
+            currentTime: audioElementRef.current.currentTime,
+            sessionTime: finalSessionTime,
+            totalListeningTime: finalTotalTime,
+            progress: audioElementRef.current.currentTime / audioElementRef.current.duration
+          });
+        }
+      
+      
+      
+      //Always use before unmount component
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current)
       }
@@ -432,6 +529,15 @@ const EnhancedMediaPlayer = ({
             <line x1="8" y1="12" x2="16" y2="12"></line>
           </svg>
         )}
+      </motion.button>
+          
+      <motion.button 
+         onClick={()=> navigate('/moremusic')}
+         whileHover={{ scale: 1.1 }}
+         whileTap={{ scale: 0.9 }}
+         className={`${showControls ? "":"hidden "}  absolute cursor-pointer max-h-10 bottom-50 md:top-30 left-4 flex space-x-5 bg-black/50 p-2 rounded-full text-white hover:bg-cyan-900/50 transition-colors`}
+      >
+        <ArrowBigLeft/> Go back library
       </motion.button>
 
       {/* Main Controls Panel */}

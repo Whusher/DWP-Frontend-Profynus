@@ -1,9 +1,9 @@
-"use client"
-
 import { TrashSVG } from "../../../Utils/SVGExporter"
 import { motion } from "framer-motion"
-
+import { useAuth } from "../../../Context/AuthContext"
+import { calculateActiveDays } from "../../../Utils/UsefulFunctions";
 export default function ProfileCard() {
+  const {user} = useAuth();
   return (
     <motion.div
       className="w-full h-auto rounded-lg py-5 flex flex-col items-center bg-gradient-to-t from-black from-60% to-cyan-500 border-cyan-400 border-2 shadow-lg shadow-cyan-500/20"
@@ -37,7 +37,7 @@ export default function ProfileCard() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
       >
-        Hello User! <span className="text-cyan-300">#25696</span>
+        {user.firstName} <span className="text-cyan-300">#{user.id.slice(4,10)}</span>
       </motion.p>
 
       <div className="w-full max-w-xs px-6 mt-4">
@@ -62,7 +62,7 @@ export default function ProfileCard() {
               <p className="text-gray-400 text-xs">GB Used</p>
             </div>
             <div className="bg-black/50 p-2 rounded-md">
-              <p className="text-cyan-400 text-xl font-bold">14</p>
+              <p className="text-cyan-400 text-xl font-bold">{calculateActiveDays(user.registredSince)}</p>
               <p className="text-gray-400 text-xs">Days Active</p>
             </div>
           </div>
@@ -80,10 +80,11 @@ export default function ProfileCard() {
             Email:{" "}
           </label>
           <input
+            value={user.email}
             type="email"
             name="email"
             id="email"
-            className="border px-3 rounded-md h-10 border-cyan-400 w-full bg-black/30 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
+            className="text-center border px-3 rounded-md h-10 border-cyan-400 w-full bg-black/30 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
           />
         </motion.div>
 
@@ -93,18 +94,19 @@ export default function ProfileCard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <label htmlFor="phone" className="block mb-2">
-            Phone:{" "}
+          <label htmlFor="username" className="block mb-2">
+            Username:{" "}
           </label>
           <input
-            type="phone"
-            name="phone"
-            id="phone"
-            className="border px-3 rounded-md h-10 border-cyan-400 w-full bg-black/30 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
+            value={user.username}
+            type="text"
+            name="username"
+            id="username"
+            className="text-center border px-3 rounded-md h-10 border-cyan-400 w-full bg-black/30 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
           />
         </motion.div>
-
-        <motion.button
+            {/* PENDIENTE AFTER RELEASE */}
+        {/* <motion.button
           className="w-full bg-cyan-500 text-black font-medium py-2 rounded-md mt-2 mb-6"
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
@@ -113,7 +115,7 @@ export default function ProfileCard() {
           transition={{ delay: 0.7 }}
         >
           Save Changes
-        </motion.button>
+        </motion.button> */}
       </div>
 
       <motion.div
